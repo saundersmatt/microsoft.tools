@@ -499,15 +499,38 @@ foreach ($registrykey in $registrykeys) {
 #    "Performance Log Users",
 #    "Event Log Readers",
 #    "Distributed COM Users",
-#    "WinRMRemoteWMIUsers__"
+#    "WinRMRemoteWMIUsers__" for Windows 2008, 2012
+#	 "Remote Management Users" for Windows 2016 and beyond
 ########################################################################
-$localgroups = @(
+$localgroups_core = @(
 	"S-1-5-32-558",
 	"S-1-5-32-559",
 	"S-1-5-32-573",
-	"S-1-5-32-562",
+	"S-1-5-32-562"
+	)
+
+$localgroups_2012 = @(
 	"WinRMRemoteWMIUsers__"
 	)
+
+$localgroups_2016 = @(
+	"S-1-5-32-580"
+	)
+
+# Test whether OS version is greater than 2016 (int 10) and select appropriate 
+# additional groups to merge with core groups
+if ((Get-CimInstance Win32_OperatingSystem).Version.split(".")[0] -ge 10) {
+	$localgroups = $localgroups_core + $localgroups_2016
+	$message = "Detected operating system 2016 or greater, applying 'Remote Management Users' group." 
+	write-host $message
+	send_event $message 'Information'
+	}
+else {
+	$localgroups = $localgroups_core + $localgroups_2012
+	$message = "Detected operating system 2012 or lower, applying 'WinRMRemoteWMIUsers__' group." 
+	write-host $message
+	send_event $message 'Information'
+}
 
 foreach ($localgroup in $localgroups) {
     if ($localgroup.StartsWith('S-1-5-32-')) {
