@@ -64,7 +64,8 @@ The following groups are either local to a server or are at the domain level.
 * "Performance Log Users", 
 * "Event Log Readers", 
 * "Distributed COM Users", 
-* "WinRMRemoteWMIUsers__"
+* "WinRMRemoteWMIUsers__" for Windows 2008, 2012,
+* "Remote Management Users" for Windows 2016 and beyond
 
 === “Read Folder” access to "C:\Windows\system32\inetsrv\config" if it exists ===
 
